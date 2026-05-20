@@ -25,6 +25,7 @@ int main(int argc, char *argv[]) {
            "-l FLOAT: sets lacunarity (default 2.0)\n"
            "-m FLOAT: sets amplitude (default 0.5)\n"
            "Functions available:\n"
+           "-p STRING: path for image to output at (defaults to image.ppm)\n"
            "0: Value noise\n"
            "1: Gradient noise\n");
 
@@ -41,9 +42,10 @@ int main(int argc, char *argv[]) {
   int octaves = 1;
   float lacunarity = 2.0f;
   float amplitude = 0.5f;
+  const char *img_path = "image.ppm"; // Output path
 
   int opt;
-  while ((opt = getopt(argc, argv, "w:h:f:s:c:a:t:o:l:m:")) != -1) {
+  while ((opt = getopt(argc, argv, "w:h:f:s:c:a:t:o:l:m:p:")) != -1) {
     switch (opt) {
     case 'w':
       width = atoi(optarg);
@@ -76,6 +78,9 @@ int main(int argc, char *argv[]) {
     case 'l':
       lacunarity = atof(optarg);
       break;
+    case 'p':
+      img_path = optarg;
+      break;
     }
   }
 
@@ -84,16 +89,16 @@ int main(int argc, char *argv[]) {
       values *
       sizeof(unsigned char)); // Allocate width * height * 3 long array for data
 
-  if (data == NULL) {
-    printf("Malloc failed\n");
-    return 1;
-  }
-
   // Create color mapping function
   int *stops =
       (int *)malloc(num_stops * sizeof(int)); // Array to hold stop locations
   color *colors =
       (color *)malloc(num_stops * sizeof(color)); // To hold stop colors
+                                                  //
+  if (data == NULL || stops == NULL || colors == NULL) {
+    printf("Malloc failed\n");
+    return 1;
+  }
 
   srand(seed); // Seed
 
@@ -154,10 +159,9 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  printf("Finished populating data\n");
+  printf("Image created at %s\n", img_path);
 
-  const char *file = "image.ppm"; // Output path
-  write_ppm(file, width, height, data);
+  write_ppm(img_path, width, height, data);
 
   free(data);   // Free data memory
   free(stops);  // Free stops
