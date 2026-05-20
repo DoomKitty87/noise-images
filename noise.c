@@ -18,11 +18,13 @@ vec2 grad(vec2 p) {
 
 float lerp(float a, float b, float t) { return (a + t * (b - a)); }
 
-float rand(vec2 p) { return hash2d(floorf(p.x), floorf(p.y)) % 1000 / 1000.0f; }
+float random(vec2 p) {
+  return hash2d(floorf(p.x), floorf(p.y)) % 1000 / 1000.0f;
+}
 
 float test_noise(float x, float y) { return 0.0f; }
 
-float white_noise(int x, int y) { return rand(vec2_create(x, y)); }
+float white_noise(int x, int y) { return random(vec2_create(x, y)); }
 
 float value_noise(float x, float y) {
   vec2 p = vec2_create(floorf(x), floorf(y));
@@ -31,10 +33,10 @@ float value_noise(float x, float y) {
   vec2 p2 = vec2_add(p, vec2_create(0, 1));
   vec2 p3 = vec2_add(p, vec2_create(1, 1));
 
-  float r0 = rand(p0);
-  float r1 = rand(p1);
-  float r2 = rand(p2);
-  float r3 = rand(p3);
+  float r0 = random(p0);
+  float r1 = random(p1);
+  float r2 = random(p2);
+  float r3 = random(p3);
 
   vec2 f = vec2_fract(vec2_create(x, y));
 
@@ -81,5 +83,5 @@ float gradient_noise(float x, float y) {
   res += (r2 - r0) * u.y * (1.0 - u.x);
   res += (r3 - r1) * u.x * u.y;
 
-  return (res + 1.0f) / 2.0f;
+  return (res + 1.0f) / 3.0f;
 }
